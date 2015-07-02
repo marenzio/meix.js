@@ -758,9 +758,9 @@ define([], function ($)
         };
 
         this.gotoLineWithID = function(id)
-        {
+        {   
             var meiEditor = this;
-            var searchNeedle = new RegExp(id, "g");
+            var searchNeedle = new RegExp("xml:id=\"" + id + "\"", 'g');
 
             //searches for the facs ID that is also the ID of the highlighted panel
             var pageTitle = meiEditor.getActivePageTitle();
@@ -803,6 +803,19 @@ define([], function ($)
             } while (newRow != nextRow);
         };
 
+        this.addCriticalMusicNote = function(id) 
+        {
+            var pageTitle = meiEditor.getActivePageTitle();
+            var rootNode = meiEditor.getPageData(pageTitle).parsed;
+            var note = rootNode.querySelector("note[*|id=" + id);
+            var staff = note.closest("staff");
+
+            console.log(note);
+            console.log(staff);
+
+            $(staff).after('<annot label="app" source="GM14" plist="p1ced3n0v1b51s5">M f2 instead of e2</annot>');
+
+        }
 
         /*
             Switches to the jQueryUI tab that has a specific title.
@@ -939,7 +952,8 @@ define([], function ($)
                     $(activeTab + " > .aceEditorPane").height($(activeTab).height());
 
                     //reload the editor to fit
-                    var pageName = activePanel.text();
+                    var panelName = activePanel.text();
+                    var pageName = panelName.replace('*', '');  // Glitch caused by '*' in name.
                     pageData[pageName].resize();
 
                     //resize console to take up rest of the screen

@@ -810,12 +810,17 @@ define([], function ($)
             var note = rootNode.querySelector("note[*|id=" + id);
             var staff = note.closest("staff");
 
-            console.log(note);
-            console.log(staff);
+            $(staff).after('<annot label="app" source="" plist="' + id + '">critical note</annot>');
 
-            $(staff).after('<annot label="app" source="GM14" plist="p1ced3n0v1b51s5">M f2 instead of e2</annot>');
-
-        }
+            // counting tabs for correct indentation (this is temporary - there must be a better way)
+            for (var parent = staff; 
+                $(parent).parent().prop('tagName').toString() != "mei";
+                parent = $(parent).parent())
+            {
+                $(staff).after('\t');
+            }
+            $(staff).after('\n\t');
+        };
 
         /*
             Switches to the jQueryUI tab that has a specific title.

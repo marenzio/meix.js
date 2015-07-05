@@ -803,7 +803,7 @@ define([], function ($)
             } while (newRow != nextRow);
         };
 
-        this.addCriticalMusicNote = function(id) 
+        this.addCriticalNoteMusic = function(id) 
         {
             var pageTitle = meiEditor.getActivePageTitle();
             var rootNode = meiEditor.getPageData(pageTitle).parsed;
@@ -812,7 +812,8 @@ define([], function ($)
 
             $(staff).after('<annot label="app" source="" plist="' + id + '">critical note</annot>');
 
-            // counting tabs for correct indentation (this is temporary - there must be a better way)
+            // counting tabs for correct indentation (this is temporary - there must be a better way).
+            // maybe add a check to see that <mei> exists and break otherwise
             for (var parent = staff; 
                 $(parent).parent().prop('tagName').toString() != "mei";
                 parent = $(parent).parent())
@@ -821,6 +822,53 @@ define([], function ($)
             }
             $(staff).after('\n\t');
         };
+
+        this.addCriticalNoteLyrics = function(id_cache)
+        {  
+            var pageTitle = meiEditor.getActivePageTitle();
+            var rootNode = meiEditor.getPageData(pageTitle).parsed;
+            var meiNode = rootNode.querySelector("mei");
+
+            // if there is not already a main <annot> element, add it            
+            if (rootNode.querySelector('annot[label="app-text"]') == null)
+            {
+                var annotMain = rootNode.createElement("annot");
+                annotMain.setAttribute("label", "app-text");
+                meiNode.appendChild(annotMain);
+            }
+            else
+            {
+                var annotMain = rootNode.querySelector('annot[label="app-text"]');
+            }
+
+            var newLine1 = rootNode.createTextNode("\n");
+            var newLine2 = rootNode.createTextNode("\n");
+            var newTab = rootNode.createTextNode("\t");
+
+            var newAnnot = rootNode.createElement("annot");
+            newAnnot.setAttribute("label", "2");
+            var newList = rootNode.createElement("list");
+            var newLi = rootNode.createElement("li");
+            var newText = rootNode.createTextNode("lyric");
+            newLi.appendChild(newText);
+            newList.appendChild(newLi);
+            newAnnot.appendChild(newList);
+            var childAnnot = rootNode.createElement("annot");
+            childAnnot.setAttribute("plist", "ids");
+            var childText = rootNode.createTextNode("critical note");
+            childAnnot.appendChild(childText);
+            newAnnot.appendChild(childAnnot);
+            annotMain.appendChild(newAnnot);
+
+            newList.appendChild(newLine1);
+            newAnnot.appendChild(newLine2);
+//            annotMain.appendChild(newLine);
+  //          meiNode.appendChild(newLine);
+
+
+            //$(meiNode).append("\n\tNODE\n")
+
+        }
 
         /*
             Switches to the jQueryUI tab that has a specific title.

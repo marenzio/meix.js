@@ -803,14 +803,25 @@ define([], function ($)
             } while (newRow != nextRow);
         };
 
+        // MM - check tabs and newlines in this function
+        // Also, make sure more than one critical note can be added per measure with proper spacing, etc
         this.addCriticalNoteMusic = function(id) 
         {
             var pageTitle = meiEditor.getActivePageTitle();
             var rootNode = meiEditor.getPageData(pageTitle).parsed;
             var note = rootNode.querySelector("note[*|id=" + id);
             var staff = note.closest("staff");
+            var measure = note.closest("measure");
 
-            $(staff).after('<annot label="app" source="" plist="' + id + '">critical note</annot>');
+//            $(staff).after('<annot label="app" source="" plist="' + id + '">critical note</annot>');
+            var newAnnot = rootNode.createElement("annot");
+            newAnnot.setAttribute("label", "app");
+            newAnnot.setAttribute("source", "");
+            newAnnot.setAttribute("plist", id);
+            newText = rootNode.createTextNode("critical note");
+            newAnnot.appendChild(newText);
+            measure.appendChild(newAnnot);
+
 
             // counting tabs for correct indentation (this is temporary - there must be a better way).
             // maybe add a check to see that <mei> exists and break otherwise
@@ -825,6 +836,7 @@ define([], function ($)
 
         this.addCriticalNoteLyrics = function(id_cache)
         {  
+            var firstNote = false;
             var pageTitle = meiEditor.getActivePageTitle();
             var rootNode = meiEditor.getPageData(pageTitle).parsed;
             var meiNode = rootNode.querySelector("mei");
@@ -835,15 +847,14 @@ define([], function ($)
                 var annotMain = rootNode.createElement("annot");
                 annotMain.setAttribute("label", "app-text");
                 meiNode.appendChild(annotMain);
+                $(annotMain).before("\t");
+                $(annotMain).after("\n");
+                firstNote = true;
             }
             else
             {
                 var annotMain = rootNode.querySelector('annot[label="app-text"]');
             }
-
-            var newLine1 = rootNode.createTextNode("\n");
-            var newLine2 = rootNode.createTextNode("\n");
-            var newTab = rootNode.createTextNode("\t");
 
             var newAnnot = rootNode.createElement("annot");
             newAnnot.setAttribute("label", "2");
@@ -854,20 +865,20 @@ define([], function ($)
             newList.appendChild(newLi);
             newAnnot.appendChild(newList);
             var childAnnot = rootNode.createElement("annot");
-            childAnnot.setAttribute("plist", "ids");
-            var childText = rootNode.createTextNode("critical note");
+            childAnnot.setAttribute("plist", id_cache);
+            var childText = rootNode.createTextNode("voice info");
             childAnnot.appendChild(childText);
             newAnnot.appendChild(childAnnot);
             annotMain.appendChild(newAnnot);
 
-            newList.appendChild(newLine1);
-            newAnnot.appendChild(newLine2);
-//            annotMain.appendChild(newLine);
-  //          meiNode.appendChild(newLine);
-
-
-            //$(meiNode).append("\n\tNODE\n")
-
+            if (firstNote) $(newAnnot).before("\n\t");
+            $(newAnnot).before("\t");
+            $(newAnnot).prepend("\n\t\t\t");
+            $(newList).prepend("\n\t\t\t\t");
+            $(newLi).after("\n\t\t\t");
+            $(newList).after("\n\t\t\t");
+            $(newAnnot).append("\n\t\t");
+            $(newAnnot).after("\n\t");
         }
 
         /*

@@ -792,6 +792,7 @@ define([], function ($)
 
                 //if it doesn't include "zone" it's what we want
                 if (!lineText.match(/zone/g))
+            
                 {
                     break;
                 }
@@ -802,84 +803,6 @@ define([], function ($)
 
             } while (newRow != nextRow);
         };
-
-        // MM - check tabs and newlines in this function
-        // Also, make sure more than one critical note can be added per measure with proper spacing, etc
-        this.addCriticalNoteMusic = function(id) 
-        {
-            var pageTitle = meiEditor.getActivePageTitle();
-            var rootNode = meiEditor.getPageData(pageTitle).parsed;
-            var note = rootNode.querySelector("note[*|id=" + id);
-            var staff = note.closest("staff");
-            var measure = note.closest("measure");
-
-//            $(staff).after('<annot label="app" source="" plist="' + id + '">critical note</annot>');
-            var newAnnot = rootNode.createElement("annot");
-            newAnnot.setAttribute("label", "app");
-            newAnnot.setAttribute("source", "");
-            newAnnot.setAttribute("plist", id);
-            newText = rootNode.createTextNode("critical note");
-            newAnnot.appendChild(newText);
-            measure.appendChild(newAnnot);
-
-
-            // counting tabs for correct indentation (this is temporary - there must be a better way).
-            // maybe add a check to see that <mei> exists and break otherwise
-            for (var parent = staff; 
-                $(parent).parent().prop('tagName').toString() != "mei";
-                parent = $(parent).parent())
-            {
-                $(staff).after('\t');
-            }
-            $(staff).after('\n\t');
-        };
-
-        this.addCriticalNoteLyrics = function(id_cache)
-        {  
-            var firstNote = false;
-            var pageTitle = meiEditor.getActivePageTitle();
-            var rootNode = meiEditor.getPageData(pageTitle).parsed;
-            var meiNode = rootNode.querySelector("mei");
-
-            // if there is not already a main <annot> element, add it            
-            if (rootNode.querySelector('annot[label="app-text"]') == null)
-            {
-                var annotMain = rootNode.createElement("annot");
-                annotMain.setAttribute("label", "app-text");
-                meiNode.appendChild(annotMain);
-                $(annotMain).before("\t");
-                $(annotMain).after("\n");
-                firstNote = true;
-            }
-            else
-            {
-                var annotMain = rootNode.querySelector('annot[label="app-text"]');
-            }
-
-            var newAnnot = rootNode.createElement("annot");
-            newAnnot.setAttribute("label", "2");
-            var newList = rootNode.createElement("list");
-            var newLi = rootNode.createElement("li");
-            var newText = rootNode.createTextNode("lyric");
-            newLi.appendChild(newText);
-            newList.appendChild(newLi);
-            newAnnot.appendChild(newList);
-            var childAnnot = rootNode.createElement("annot");
-            childAnnot.setAttribute("plist", id_cache);
-            var childText = rootNode.createTextNode("voice info");
-            childAnnot.appendChild(childText);
-            newAnnot.appendChild(childAnnot);
-            annotMain.appendChild(newAnnot);
-
-            if (firstNote) $(newAnnot).before("\n\t");
-            $(newAnnot).before("\t");
-            $(newAnnot).prepend("\n\t\t\t");
-            $(newList).prepend("\n\t\t\t\t");
-            $(newLi).after("\n\t\t\t");
-            $(newList).after("\n\t\t\t");
-            $(newAnnot).append("\n\t\t");
-            $(newAnnot).after("\n\t");
-        }
 
         /*
             Switches to the jQueryUI tab that has a specific title.

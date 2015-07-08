@@ -786,22 +786,6 @@ define([], function ($)
             var newRow = facsSearch.start.row;
             var nextRow = newRow, lineText;
 
-            do {
-                //gets the full text from the search result row
-                lineText = pageRef.session.doc.getLine(nextRow);
-
-                //if it doesn't include "zone" it's what we want
-                if (!lineText.match(/zone/g))
-            
-                {
-                    break;
-                }
-
-                //if we didn't break, find the next one
-                pageRef.findNext();
-                nextRow = pageRef.getSelectionRange().start.row;
-
-            } while (newRow != nextRow);
         };
 
         /*

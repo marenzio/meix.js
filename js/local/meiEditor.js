@@ -783,8 +783,8 @@ define([], function ($)
                 range: null
             });
 
-            var newRow = facsSearch.start.row;
-            var nextRow = newRow, lineText;
+//            var newRow = facsSearch.start.row;
+//            var nextRow = newRow, lineText;
 
         };
 
